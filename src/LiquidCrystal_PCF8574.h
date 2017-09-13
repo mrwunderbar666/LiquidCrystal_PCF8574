@@ -6,7 +6,7 @@
 /// \copyright Copyright (c) 2014 by Matthias Hertel.\n
 /// This work is licensed under a BSD style license.\n
 /// See http://www.mathertel.de/License.aspx
-/// 
+///
 /// \details
 /// This is a library for driving LiquidCrystal displays (LCD) by using the I2C bus and an PCF8574 I2C adapter.
 /// This library is derived from the original Arduino LiquidCrystal library and uses the original Wire library for communication.
@@ -66,7 +66,7 @@ class LiquidCrystal_PCF8574 : public Print {
 public:
   LiquidCrystal_PCF8574(uint8_t adr);
 
-  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
+  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS, uint8_t sda = 21, uint8_t scl = 22);
 
   void clear();
   void home();
@@ -87,7 +87,7 @@ public:
   void setBacklight(uint8_t brightness);
 
   void createChar(uint8_t, uint8_t[]);
-  void setCursor(uint8_t col, uint8_t row); 
+  void setCursor(uint8_t col, uint8_t row);
 
   virtual size_t write(uint8_t);
   using Print::write;
@@ -101,7 +101,7 @@ private:
 
 // NEW:
   uint8_t _Addr;        ///< Wire Address of the LCD
-  uint8_t _backlight;   ///< the backlight intensity 
+  uint8_t _backlight;   ///< the backlight intensity
 
   uint8_t _displayfunction; ///< lines and dots mode
   uint8_t _displaycontrol;  ///< cursor, display, blink flags

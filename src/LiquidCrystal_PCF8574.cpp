@@ -6,7 +6,7 @@
 /// \copyright Copyright (c) 2014 by Matthias Hertel.\n
 /// This work is licensed under a BSD style license.\n
 /// See http://www.mathertel.de/License.aspx
-/// 
+///
 /// \details
 /// This is a library for driving LiquidCrystal displays (LCD) by using the I2C bus and an PCF8574 I2C adapter.
 /// This library is derived from the original Arduino LiquidCrystal library and uses the original Wire library for communication.
@@ -40,17 +40,17 @@
 // When the display powers up, it is configured as follows:
 //
 // 1. Display clear
-// 2. Function set: 
-//    DL = 1; 8-bit interface data 
-//    N = 0; 1-line display 
-//    F = 0; 5x8 dot character font 
-// 3. Display on/off control: 
-//    D = 0; Display off 
-//    C = 0; Cursor off 
-//    B = 0; Blinking off 
-// 4. Entry mode set: 
-//    I/D = 1; Increment by 1 
-//    S = 0; No shift 
+// 2. Function set:
+//    DL = 1; 8-bit interface data
+//    N = 0; 1-line display
+//    F = 0; 5x8 dot character font
+// 3. Display on/off control:
+//    D = 0; Display off
+//    C = 0; Cursor off
+//    B = 0; Blinking off
+// 4. Entry mode set:
+//    I/D = 1; Increment by 1
+//    S = 0; No shift
 //
 // Note, however, that resetting the Arduino doesn't reset the LCD, so we
 // can't assume that its in that state when a sketch starts (and the
@@ -72,9 +72,21 @@ LiquidCrystal_PCF8574::LiquidCrystal_PCF8574(uint8_t addr)
 } // LiquidCrystal_PCF8574
 
 
-void LiquidCrystal_PCF8574::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
+void LiquidCrystal_PCF8574::begin(uint8_t cols, uint8_t lines, uint8_t dotsize, uint8_t sda, uint8_t scl) {
   // cols ignored !
   _numlines = lines;
+
+  // if (!sda) {
+  //   sda = 21;
+  // }
+  //
+  // if (!scl)
+  // {
+  //   scl = 22;
+  // }
+
+  // _sda = sda;
+  // _scl = scl;
 
   _displayfunction = 0;
 
@@ -90,27 +102,28 @@ void LiquidCrystal_PCF8574::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) 
   // SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
   // according to datasheet, we need at least 40ms after power rises above 2.7V
   // before sending commands. Arduino can turn on way befor 4.5V so we'll wait 50
-  Wire.begin();
+
+  Wire.begin(sda, scl);
 
   // initializing th display
   _write2Wire(0x00, LOW, false);
-  delayMicroseconds(50000); 
+  delayMicroseconds(50000);
 
   // put the LCD into 4 bit mode according to the hitachi HD44780 datasheet figure 26, pg 47
   _sendNibble(0x03, RSMODE_CMD);
-  delayMicroseconds(4500); 
+  delayMicroseconds(4500);
   _sendNibble(0x03, RSMODE_CMD);
-  delayMicroseconds(4500); 
+  delayMicroseconds(4500);
   _sendNibble(0x03, RSMODE_CMD);
   delayMicroseconds(150);
   // finally, set to 4-bit interface
   _sendNibble(0x02, RSMODE_CMD);
 
   // finally, set # lines, font size, etc.
-  _command(LCD_FUNCTIONSET | _displayfunction);  
+  _command(LCD_FUNCTIONSET | _displayfunction);
 
   // turn the display on with no cursor or blinking default
-  _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;  
+  _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
   display();
 
   // clear it off
@@ -136,7 +149,7 @@ void LiquidCrystal_PCF8574::home()
 }
 
 
-/// Set the cursor to a new position. 
+/// Set the cursor to a new position.
 void LiquidCrystal_PCF8574::setCursor(uint8_t col, uint8_t row)
 {
   int row_offsets[] = { 0x00, 0x40, 0x14, 0x54   };
@@ -274,7 +287,7 @@ void LiquidCrystal_PCF8574::_write2Wire(uint8_t halfByte, uint8_t mode, uint8_t 
 
   Wire.beginTransmission(_Addr);
   Wire.write(i2cData);
-  Wire.endTransmission();   
+  Wire.endTransmission();
 } // write2Wire
 
 
